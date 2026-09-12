@@ -1,1 +1,867 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>من سيربح اليوم؟</title>
 
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Tahoma, sans-serif;
+  background: linear-gradient(135deg, #07152f, #102d5c, #061329);
+  color: white;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+header h1 {
+  font-size: 42px;
+  color: #ffd54a;
+  text-shadow: 0 0 15px rgba(255,213,74,.5);
+}
+
+header p {
+  margin-top: 8px;
+  color: #dce8ff;
+  font-size: 18px;
+}
+
+/* لوحة النقود */
+.money-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.money {
+  background: #12386e;
+  border: 2px solid #4c76b8;
+  padding: 10px 5px;
+  text-align: center;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: .3s;
+}
+
+.money.active {
+  background: #ffd54a;
+  color: #07152f;
+  border-color: white;
+  transform: scale(1.05);
+}
+
+.money.used {
+  opacity: .35;
+  text-decoration: line-through;
+}
+
+/* السؤال */
+.game-box {
+  background: rgba(255,255,255,.08);
+  border: 2px solid rgba(255,255,255,.18);
+  border-radius: 22px;
+  padding: 25px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.3);
+}
+
+.question-number {
+  text-align: center;
+  color: #ffd54a;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.question {
+  background: #07152f;
+  border: 2px solid #315d9d;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  font-size: 25px;
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* الاختيارات */
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.answer {
+  border: 2px solid #4776b9;
+  background: #102d5c;
+  color: white;
+  border-radius: 14px;
+  padding: 18px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.answer:hover {
+  background: #1d4d91;
+  transform: translateY(-2px);
+}
+
+.answer.correct {
+  background: #168a4b;
+  border-color: #55f09b;
+}
+
+.answer.wrong {
+  background: #a52626;
+  border-color: #ff7777;
+}
+
+.answer.disabled {
+  pointer-events: none;
+}
+
+/* الأزرار */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+button.control {
+  border: none;
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #ffd54a;
+  color: #07152f;
+}
+
+button.control:hover {
+  transform: scale(1.04);
+}
+
+button.control.secondary {
+  background: #315d9d;
+  color: white;
+}
+
+/* شاشة البداية */
+.start-screen {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.start-screen h2 {
+  font-size: 32px;
+  color: #ffd54a;
+  margin-bottom: 15px;
+}
+
+.start-screen p {
+  font-size: 18px;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+/* النتيجة */
+.result {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.result h2 {
+  color: #ffd54a;
+  font-size: 35px;
+  margin-bottom: 15px;
+}
+
+.result .score {
+  font-size: 45px;
+  font-weight: bold;
+  margin: 20px;
+}
+
+/* الجوال */
+@media (max-width: 700px) {
+  header h1 {
+    font-size: 30px;
+  }
+
+  .money-board {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .answers {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 20px;
+  }
+
+  .answer {
+    font-size: 18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <h1>🏆 من سيربح اليوم؟</h1>
+  <p>اختبر معلوماتك واربح أكبر قيمة ممكنة!</p>
+</header>
+
+<!-- القيم المالية -->
+<div class="money-board" id="moneyBoard"></div>
+
+<!-- اللعبة -->
+<div class="game-box" id="gameBox">
+
+  <div class="start-screen" id="startScreen">
+    <h2>🎯 مستعد تبدأ التحدي؟</h2>
+    <p>
+      أجب عن الأسئلة بشكل صحيح وانتقل من مستوى إلى المستوى الأعلى.
+      <br>
+      يمكنك تعديل الأسئلة والإجابات من الكود بسهولة.
+    </p>
+
+    <button class="control" onclick="startGame()">
+      🚀 ابدأ اللعبة
+    </button>
+  </div>
+
+  <div id="questionScreen" style="display:none;">
+
+    <div class="question-number" id="questionNumber"></div>
+
+    <div class="question" id="question"></div>
+
+    <div class="answers" id="answers"></div>
+
+    <div class="controls">
+
+      <button class="control secondary" onclick="fiftyFifty()">
+        50/50
+      </button>
+
+      <button class="control secondary" onclick="askAudience()">
+        👥 اسأل الجمهور
+      </button>
+
+      <button class="control secondary" onclick="skipQuestion()">
+        ⏭ تخطي
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="result" id="resultScreen">
+
+    <h2>🎉 انتهت اللعبة!</h2>
+
+    <div class="score" id="finalScore"></div>
+
+    <p id="resultMessage"></p>
+
+    <div class="controls">
+
+      <button class="control" onclick="restartGame()">
+        🔄 العب مرة أخرى
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<script>
+
+/* =====================================================
+   💰 القيم المالية
+   ===================================================== */
+
+const moneyValues = [
+  5,10,15,20,25,
+  30,35,40,45,50,
+  55,60,65,70,75,
+  80,85,90,95,100,
+  110,120,130,140,150,
+  160,170,180,190,200
+];
+
+
+/* =====================================================
+   📝 الأسئلة
+   =====================================================
+
+   👇 هنا المكان الذي تضيفين فيه أسئلتك.
+
+   كل سؤال بالشكل التالي:
+
+   {
+     question: "السؤال هنا",
+     answers: [
+       "الإجابة الأولى",
+       "الإجابة الثانية",
+       "الإجابة الثالثة",
+       "الإجابة الرابعة"
+     ],
+     correct: 0
+   }
+
+   correct:
+   0 = الإجابة الأولى
+   1 = الإجابة الثانية
+   2 = الإجابة الثالثة
+   3 = الإجابة الرابعة
+
+   يمكنك إضافة عدد غير محدود من الأسئلة.
+   ===================================================== */
+
+
+const questions = [
+
+  {
+    question: "ما هو الكوكب المعروف بالكوكب الأحمر؟",
+    answers: [
+      "الأرض",
+      "المريخ",
+      "المشتري",
+      "الزهرة"
+    ],
+    correct: 1
+  },
+
+  {
+    question: "ما الغاز الذي تحتاجه النباتات لعملية البناء الضوئي؟",
+    answers: [
+      "الأكسجين",
+      "النيتروجين",
+      "ثاني أكسيد الكربون",
+      "الهيدروجين"
+    ],
+    correct: 2
+  },
+
+  {
+    question: "كم عدد أيام الأسبوع؟",
+    answers: [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    correct: 2
+  },
+
+  {
+    question: "ما عاصمة مصر؟",
+    answers: [
+      "الإسكندرية",
+      "القاهرة",
+      "الجيزة",
+      "المنصورة"
+    ],
+    correct: 1
+  },
+
+  {
+    question: "أي مما يلي يعد مصدرًا للطاقة؟",
+    answers: [
+      "الشمس",
+      "الكتاب",
+      "الماء فقط",
+      "الهواء فقط"
+    ],
+    correct: 0
+  },
+
+  {
+    question: "ما الوحدة الأساسية لبناء جسم الكائن الحي؟",
+    answers: [
+      "النسيج",
+      "العضو",
+      "الخلية",
+      "الجهاز"
+    ],
+    correct: 2
+  },
+
+  {
+    question: "أي من الآتي يعد فلزًا؟",
+    answers: [
+      "الأكسجين",
+      "الحديد",
+      "الكربون",
+      "الكلور"
+    ],
+    correct: 1
+  },
+
+  {
+    question: "ما العملية التي تصنع بها النباتات غذاءها؟",
+    answers: [
+      "التنفس",
+      "الهضم",
+      "البناء الضوئي",
+      "الإخراج"
+    ],
+    correct: 2
+  },
+
+  {
+    question: "ما أكبر كوكب في المجموعة الشمسية؟",
+    answers: [
+      "الأرض",
+      "المريخ",
+      "زحل",
+      "المشتري"
+    ],
+    correct: 3
+  },
+
+  {
+    question: "ما العضو المسؤول عن ضخ الدم في جسم الإنسان؟",
+    answers: [
+      "الرئة",
+      "القلب",
+      "المعدة",
+      "الكبد"
+    ],
+    correct: 1
+  }
+
+];
+
+
+/* =====================================================
+   متغيرات اللعبة
+   ===================================================== */
+
+let currentQuestion = 0;
+let currentMoney = 0;
+let usedFifty = false;
+let usedAudience = false;
+
+
+/* =====================================================
+   إنشاء لوحة النقود
+   ===================================================== */
+
+function createMoneyBoard() {
+
+  const board = document.getElementById("moneyBoard");
+
+  board.innerHTML = "";
+
+  moneyValues.forEach((value, index) => {
+
+    const div = document.createElement("div");
+
+    div.className = "money";
+
+    div.id = "money-" + index;
+
+    div.textContent = value + " جنيه";
+
+    board.appendChild(div);
+
+  });
+
+}
+
+
+/* =====================================================
+   بدء اللعبة
+   ===================================================== */
+
+function startGame() {
+
+  currentQuestion = 0;
+  currentMoney = 0;
+
+  usedFifty = false;
+  usedAudience = false;
+
+  document.getElementById("startScreen").style.display = "none";
+
+  document.getElementById("resultScreen").style.display = "none";
+
+  document.getElementById("questionScreen").style.display = "block";
+
+  loadQuestion();
+
+}
+
+
+/* =====================================================
+   عرض السؤال
+   ===================================================== */
+
+function loadQuestion() {
+
+  if (currentQuestion >= questions.length) {
+
+    finishGame();
+
+    return;
+
+  }
+
+  const q = questions[currentQuestion];
+
+  document.getElementById("questionNumber").textContent =
+    "السؤال رقم " + (currentQuestion + 1) +
+    " — قيمة السؤال: " +
+    moneyValues[currentQuestion] +
+    " جنيه";
+
+  document.getElementById("question").textContent = q.question;
+
+  const answersDiv = document.getElementById("answers");
+
+  answersDiv.innerHTML = "";
+
+  q.answers.forEach((answer, index) => {
+
+    const button = document.createElement("button");
+
+    button.className = "answer";
+
+    button.textContent =
+      String.fromCharCode(65 + index) + ") " + answer;
+
+    button.onclick = function() {
+
+      checkAnswer(index, button);
+
+    };
+
+    answersDiv.appendChild(button);
+
+  });
+
+  updateMoneyBoard();
+
+}
+
+
+/* =====================================================
+   فحص الإجابة
+   ===================================================== */
+
+function checkAnswer(selected, button) {
+
+  const q = questions[currentQuestion];
+
+  const buttons =
+    document.querySelectorAll(".answer");
+
+  buttons.forEach(btn => {
+
+    btn.classList.add("disabled");
+
+  });
+
+  if (selected === q.correct) {
+
+    button.classList.add("correct");
+
+    currentMoney = moneyValues[currentQuestion];
+
+    setTimeout(() => {
+
+      currentQuestion++;
+
+      loadQuestion();
+
+    }, 900);
+
+  } else {
+
+    button.classList.add("wrong");
+
+    buttons[q.correct].classList.add("correct");
+
+    setTimeout(() => {
+
+      finishGame();
+
+    }, 1200);
+
+  }
+
+}
+
+
+/* =====================================================
+   تحديث لوحة النقود
+   ===================================================== */
+
+function updateMoneyBoard() {
+
+  moneyValues.forEach((value, index) => {
+
+    const box = document.getElementById("money-" + index);
+
+    box.classList.remove("active");
+
+    if (index < currentQuestion) {
+
+      box.classList.add("used");
+
+    }
+
+  });
+
+  const currentBox =
+    document.getElementById("money-" + currentQuestion);
+
+  if (currentBox) {
+
+    currentBox.classList.add("active");
+
+  }
+
+}
+
+
+/* =====================================================
+   50/50
+   ===================================================== */
+
+function fiftyFifty() {
+
+  if (usedFifty) {
+
+    alert("لقد استخدمت وسيلة 50/50 بالفعل!");
+
+    return;
+
+  }
+
+  usedFifty = true;
+
+  const q = questions[currentQuestion];
+
+  const buttons =
+    document.querySelectorAll(".answer");
+
+  let wrongAnswers = [];
+
+  q.answers.forEach((answer, index) => {
+
+    if (index !== q.correct) {
+
+      wrongAnswers.push(index);
+
+    }
+
+  });
+
+  wrongAnswers.sort(() => Math.random() - 0.5);
+
+  wrongAnswers.slice(0, 2).forEach(index => {
+
+    buttons[index].style.visibility = "hidden";
+
+  });
+
+}
+
+
+/* =====================================================
+   اسأل الجمهور
+   ===================================================== */
+
+function askAudience() {
+
+  if (usedAudience) {
+
+    alert("لقد استخدمت وسيلة اسأل الجمهور بالفعل!");
+
+    return;
+
+  }
+
+  usedAudience = true;
+
+  const q = questions[currentQuestion];
+
+  let percentages = [5,5,5,5];
+
+  percentages[q.correct] = 85;
+
+  let remaining = 15;
+
+  let wrongIndexes = [];
+
+  q.answers.forEach((answer,index) => {
+
+    if(index !== q.correct) {
+
+      wrongIndexes.push(index);
+
+    }
+
+  });
+
+  wrongIndexes.forEach((index,i) => {
+
+    if(i === wrongIndexes.length - 1) {
+
+      percentages[index] = remaining;
+
+    } else {
+
+      let number =
+        Math.floor(Math.random() * (remaining + 1));
+
+      percentages[index] = number;
+
+      remaining -= number;
+
+    }
+
+  });
+
+  let message = "📊 توقعات الجمهور:\n\n";
+
+  q.answers.forEach((answer,index) => {
+
+    message +=
+      String.fromCharCode(65 + index) +
+      ") " +
+      answer +
+      " = " +
+      percentages[index] +
+      "%\n";
+
+  });
+
+  alert(message);
+
+}
+
+
+/* =====================================================
+   تخطي السؤال
+   ===================================================== */
+
+function skipQuestion() {
+
+  const confirmation =
+    confirm("هل تريد تخطي هذا السؤال؟");
+
+  if (!confirmation) return;
+
+  currentQuestion++;
+
+  loadQuestion();
+
+}
+
+
+/* =====================================================
+   نهاية اللعبة
+   ===================================================== */
+
+function finishGame() {
+
+  document.getElementById("questionScreen").style.display = "none";
+
+  document.getElementById("resultScreen").style.display = "block";
+
+  document.getElementById("finalScore").textContent =
+    currentMoney + " جنيه";
+
+  if (currentMoney >= 200) {
+
+    document.getElementById("resultMessage").textContent =
+      "🏆 مذهل! لقد وصلت إلى أعلى قيمة!";
+
+  } else if (currentMoney >= 100) {
+
+    document.getElementById("resultMessage").textContent =
+      "👏 أداء رائع جدًا!";
+
+  } else if (currentMoney > 0) {
+
+    document.getElementById("resultMessage").textContent =
+      "👍 أحسنت! حاول الوصول إلى قيمة أعلى في المرة القادمة.";
+
+  } else {
+
+    document.getElementById("resultMessage").textContent =
+      "💪 لا بأس، حاول مرة أخرى!";
+
+  }
+
+}
+
+
+/* =====================================================
+   إعادة اللعبة
+   ===================================================== */
+
+function restartGame() {
+
+  document.getElementById("resultScreen").style.display = "none";
+
+  document.getElementById("startScreen").style.display = "block";
+
+  moneyValues.forEach((value,index) => {
+
+    const box =
+      document.getElementById("money-" + index);
+
+    box.classList.remove("used");
+    box.classList.remove("active");
+
+  });
+
+}
+
+
+/* =====================================================
+   تشغيل أولي
+   ===================================================== */
+
+createMoneyBoard();
+
+</script>
+
+</body>
+  </html>
