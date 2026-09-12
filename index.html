@@ -3,865 +3,1208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>من سيربح اليوم؟</title>
+<title>من سيربح اليوم؟ 🏆</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Tahoma,Arial,sans-serif;
+background:radial-gradient(circle at top,#173d78,#07152d 65%);
+color:white;
+min-height:100vh;
 }
 
-body {
-  font-family: Arial, Tahoma, sans-serif;
-  background: linear-gradient(135deg, #07152f, #102d5c, #061329);
-  color: white;
-  min-height: 100vh;
-  padding: 20px;
+button,input,select{font-family:inherit}
+
+.header{
+text-align:center;
+padding:18px 10px 8px;
 }
 
-.container {
-  max-width: 1100px;
-  margin: auto;
+.header h1{
+margin:0;
+font-size:clamp(28px,5vw,48px);
+color:#ffd54a;
+text-shadow:0 3px 15px #000;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 25px;
+.header p{
+margin:7px 0;
+color:#d8e5ff;
 }
 
-header h1 {
-  font-size: 42px;
-  color: #ffd54a;
-  text-shadow: 0 0 15px rgba(255,213,74,.5);
+/* التخطيط الرئيسي */
+.game-layout{
+display:grid;
+grid-template-columns:145px 1fr;
+direction:ltr;
+gap:15px;
+max-width:1200px;
+margin:10px auto;
+padding:10px;
 }
 
-header p {
-  margin-top: 8px;
-  color: #dce8ff;
-  font-size: 18px;
+.game-area{
+direction:rtl;
+min-width:0;
 }
 
-/* لوحة النقود */
-.money-board {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-bottom: 25px;
+/* شريط الجوائز */
+.prize-board{
+direction:rtl;
+background:rgba(5,16,38,.9);
+border:2px solid #426aa4;
+border-radius:18px;
+padding:10px;
+height:fit-content;
+position:sticky;
+top:10px;
+box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-.money {
-  background: #12386e;
-  border: 2px solid #4c76b8;
-  padding: 10px 5px;
-  text-align: center;
-  border-radius: 10px;
-  font-weight: bold;
-  transition: .3s;
+.prize-title{
+text-align:center;
+color:#ffd54a;
+font-weight:bold;
+margin-bottom:8px;
 }
 
-.money.active {
-  background: #ffd54a;
-  color: #07152f;
-  border-color: white;
-  transform: scale(1.05);
+.prize{
+padding:7px 4px;
+margin:4px 0;
+border-radius:8px;
+text-align:center;
+font-size:14px;
+background:#102c58;
+border:1px solid #31578e;
 }
 
-.money.used {
-  opacity: .35;
-  text-decoration: line-through;
+.prize.current{
+background:#ffd54a;
+color:#07152d;
+font-weight:bold;
+transform:scale(1.04);
 }
 
-/* السؤال */
-.game-box {
-  background: rgba(255,255,255,.08);
-  border: 2px solid rgba(255,255,255,.18);
-  border-radius: 22px;
-  padding: 25px;
-  box-shadow: 0 15px 40px rgba(0,0,0,.3);
+.prize.passed{
+opacity:.45;
 }
 
-.question-number {
-  text-align: center;
-  color: #ffd54a;
-  font-size: 20px;
-  margin-bottom: 15px;
+/* البطاقات */
+.card{
+background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.16);
+border-radius:24px;
+padding:22px;
+box-shadow:0 15px 40px rgba(0,0,0,.25);
 }
 
-.question {
-  background: #07152f;
-  border: 2px solid #315d9d;
-  border-radius: 15px;
-  padding: 25px;
-  text-align: center;
-  font-size: 25px;
-  min-height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
+.center{text-align:center}
+
+.name-box{
+display:flex;
+gap:10px;
+max-width:500px;
+margin:20px auto;
 }
 
-/* الاختيارات */
-.answers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+.name-box input{
+flex:1;
+padding:14px;
+border-radius:12px;
+border:2px solid #4774b2;
+font-size:18px;
+text-align:center;
 }
 
-.answer {
-  border: 2px solid #4776b9;
-  background: #102d5c;
-  color: white;
-  border-radius: 14px;
-  padding: 18px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: .25s;
+.main-btn{
+border:0;
+padding:13px 22px;
+border-radius:12px;
+background:#ffd54a;
+color:#07152d;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
 }
 
-.answer:hover {
-  background: #1d4d91;
-  transform: translateY(-2px);
+.main-btn:hover{transform:scale(1.03)}
+
+.secondary{
+background:#315d9d;
+color:white;
 }
 
-.answer.correct {
-  background: #168a4b;
-  border-color: #55f09b;
+.question-info{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+margin-bottom:12px;
+color:#dce8ff;
 }
 
-.answer.wrong {
-  background: #a52626;
-  border-color: #ff7777;
+.question-number{
+color:#ffd54a;
+font-weight:bold;
 }
 
-.answer.disabled {
-  pointer-events: none;
+.question{
+background:#06142c;
+border:2px solid #416ba8;
+border-radius:18px;
+min-height:130px;
+padding:25px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:clamp(20px,3vw,29px);
+line-height:1.5;
 }
 
-/* الأزرار */
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 22px;
+.answers{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin-top:18px;
 }
 
-button.control {
-  border: none;
-  border-radius: 12px;
-  padding: 13px 20px;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-  background: #ffd54a;
-  color: #07152f;
+.answer{
+background:#102f60;
+border:2px solid #4775b4;
+color:white;
+padding:18px 12px;
+border-radius:14px;
+font-size:18px;
+cursor:pointer;
+transition:.2s;
 }
 
-button.control:hover {
-  transform: scale(1.04);
+.answer:hover{
+background:#1d4d8b;
+transform:translateY(-2px);
 }
 
-button.control.secondary {
-  background: #315d9d;
-  color: white;
+.answer.correct{
+background:#137b47;
+border-color:#62efaa;
 }
 
-/* شاشة البداية */
-.start-screen {
-  text-align: center;
-  padding: 40px 20px;
+.answer.wrong{
+background:#9b2929;
+border-color:#ff7777;
 }
 
-.start-screen h2 {
-  font-size: 32px;
-  color: #ffd54a;
-  margin-bottom: 15px;
+.answer.hidden{
+visibility:hidden;
 }
 
-.start-screen p {
-  font-size: 18px;
-  line-height: 1.8;
-  margin-bottom: 25px;
+.answer.locked{
+pointer-events:none;
+}
+
+.controls{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:10px;
+margin-top:18px;
+}
+
+.controls button{
+border:0;
+border-radius:11px;
+padding:11px 15px;
+cursor:pointer;
+font-weight:bold;
+}
+
+#gameScreen,#resultScreen,#adminScreen{
+display:none;
 }
 
 /* النتيجة */
-.result {
-  display: none;
-  text-align: center;
-  padding: 40px 20px;
+.certificate{
+position:relative;
+background:linear-gradient(145deg,#fffdf2,#f5e7b4);
+color:#18243b;
+border:7px double #b28a25;
+border-radius:18px;
+padding:35px 25px 75px;
+max-width:700px;
+margin:15px auto;
+box-shadow:0 15px 40px rgba(0,0,0,.4);
 }
 
-.result h2 {
-  color: #ffd54a;
-  font-size: 35px;
-  margin-bottom: 15px;
+.certificate h2{
+color:#9a7118;
+font-size:34px;
+margin:5px 0 15px;
 }
 
-.result .score {
-  font-size: 45px;
-  font-weight: bold;
-  margin: 20px;
+.student-name{
+font-size:30px;
+font-weight:bold;
+color:#173d78;
+margin:15px;
 }
 
-/* الجوال */
-@media (max-width: 700px) {
-  header h1 {
-    font-size: 30px;
-  }
+.win-value{
+font-size:38px;
+font-weight:bold;
+color:#9a7118;
+margin:12px;
+}
 
-  .money-board {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.signature{
+position:absolute;
+left:28px;
+bottom:18px;
+text-align:center;
+font-size:13px;
+}
 
-  .answers {
-    grid-template-columns: 1fr;
-  }
+.signature-line{
+width:130px;
+border-top:1px solid #333;
+margin-top:25px;
+}
 
-  .question {
-    font-size: 20px;
-  }
+/* إضافة الأسئلة */
+.admin-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
 
-  .answer {
-    font-size: 18px;
-  }
+.admin-grid input,
+.admin-grid textarea,
+.admin-grid select{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #5274a7;
+background:#f8fbff;
+color:#111;
+}
+
+.admin-grid textarea{
+min-height:80px;
+resize:vertical;
+}
+
+.full{grid-column:1/-1}
+
+.question-count{
+margin-top:15px;
+color:#ffd54a;
+font-weight:bold;
+}
+
+.small-note{
+color:#cbd8ed;
+font-size:13px;
+margin-top:10px;
+line-height:1.6;
+}
+
+@media(max-width:700px){
+.game-layout{
+grid-template-columns:1fr;
+}
+
+.prize-board{
+position:static;
+display:flex;
+flex-direction:row;
+overflow-x:auto;
+gap:5px;
+}
+
+.prize-title{display:none}
+
+.prize{
+min-width:65px;
+margin:0;
+font-size:12px;
+}
+
+.answers{
+grid-template-columns:1fr;
+}
+
+.admin-grid{
+grid-template-columns:1fr;
+}
+
+.full{
+grid-column:auto;
+}
+
+.name-box{
+flex-direction:column;
+}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<header>
-  <h1>🏆 من سيربح اليوم؟</h1>
-  <p>اختبر معلوماتك واربح أكبر قيمة ممكنة!</p>
+<header class="header">
+<h1>🏆 من سيربح اليوم؟</h1>
+<p>اختبر معلوماتك وارفع قيمة مكسبك!</p>
 </header>
 
-<!-- القيم المالية -->
-<div class="money-board" id="moneyBoard"></div>
+<div class="game-layout">
+
+<!-- شريط الجوائز -->
+<aside class="prize-board">
+<div class="prize-title">💰 الجوائز</div>
+<div id="prizes"></div>
+</aside>
+
+<main class="game-area">
+
+<!-- البداية -->
+<section class="card center" id="startScreen">
+
+<h2>🎯 جاهز للتحدي؟</h2>
+
+<p>
+كلما أجبت عن أسئلة أكثر، زادت صعوبة الأسئلة وزادت قيمة الجائزة.
+</p>
+
+<div class="name-box">
+<input id="studentName" placeholder="اكتب اسم الطالب">
+<button class="main-btn" onclick="startGame()">🚀 ابدأ</button>
+</div>
+
+<div class="controls">
+<button class="main-btn secondary" onclick="showAdmin()">
+➕ بنك الأسئلة
+</button>
+</div>
+
+<p class="small-note">
+يمكنك إضافة مئات الأسئلة وتحديد مستوى صعوبة كل سؤال.
+اللعبة تختار الأسئلة عشوائيًا ولا تكرر السؤال داخل نفس اللعبة.
+</p>
+
+</section>
+
 
 <!-- اللعبة -->
-<div class="game-box" id="gameBox">
+<section class="card" id="gameScreen">
 
-  <div class="start-screen" id="startScreen">
-    <h2>🎯 مستعد تبدأ التحدي؟</h2>
-    <p>
-      أجب عن الأسئلة بشكل صحيح وانتقل من مستوى إلى المستوى الأعلى.
-      <br>
-      يمكنك تعديل الأسئلة والإجابات من الكود بسهولة.
-    </p>
+<div class="question-info">
+<span class="question-number" id="questionNumber"></span>
+<span id="difficultyText"></span>
+</div>
 
-    <button class="control" onclick="startGame()">
-      🚀 ابدأ اللعبة
-    </button>
-  </div>
+<div class="question" id="questionText"></div>
 
-  <div id="questionScreen" style="display:none;">
+<div class="answers" id="answers"></div>
 
-    <div class="question-number" id="questionNumber"></div>
+<div class="controls">
 
-    <div class="question" id="question"></div>
+<button class="secondary" onclick="use5050()">🌓 50/50</button>
 
-    <div class="answers" id="answers"></div>
-
-    <div class="controls">
-
-      <button class="control secondary" onclick="fiftyFifty()">
-        50/50
-      </button>
-
-      <button class="control secondary" onclick="askAudience()">
-        👥 اسأل الجمهور
-      </button>
-
-      <button class="control secondary" onclick="skipQuestion()">
-        ⏭ تخطي
-      </button>
-
-    </div>
-
-  </div>
-
-  <div class="result" id="resultScreen">
-
-    <h2>🎉 انتهت اللعبة!</h2>
-
-    <div class="score" id="finalScore"></div>
-
-    <p id="resultMessage"></p>
-
-    <div class="controls">
-
-      <button class="control" onclick="restartGame()">
-        🔄 العب مرة أخرى
-      </button>
-
-    </div>
-
-  </div>
+<button class="secondary" onclick="askAudience()">👥 الجمهور</button>
 
 </div>
 
+</section>
+
+
+<!-- النتيجة -->
+<section class="card center" id="resultScreen">
+
+<div class="certificate">
+
+<h2>🎉 تهانينا!</h2>
+
+<p>مبروك للطالب</p>
+
+<div class="student-name" id="finalName"></div>
+
+<p>لقد أجبت عن</p>
+
+<div class="win-value" id="finalQuestions"></div>
+
+<p>إجابة صحيحة</p>
+
+<div class="win-value" id="finalMoney"></div>
+
+<p>💰 قيمة المكسب</p>
+
+<div class="signature">
+<div>توقيع المستر</div>
+<div class="signature-line"></div>
+<div id="teacherName">Mr. __________</div>
 </div>
+
+</div>
+
+<div class="controls">
+<button class="main-btn" onclick="newGame()">🔄 لعبة جديدة</button>
+<button class="main-btn secondary" onclick="showAdmin()">➕ إدارة الأسئلة</button>
+</div>
+
+</section>
+
+
+<!-- إدارة الأسئلة -->
+<section class="card" id="adminScreen">
+
+<h2 class="center">📚 بنك الأسئلة</h2>
+
+<p class="small-note">
+أضيفي السؤال وحددي مستوى صعوبته والإجابة الصحيحة.
+الأسئلة يتم حفظها على نفس المتصفح.
+</p>
+
+<div class="admin-grid">
+
+<div class="full">
+<label>السؤال</label>
+<textarea id="newQuestion" placeholder="اكتبي السؤال هنا"></textarea>
+</div>
+
+<div>
+<label>الإجابة A</label>
+<input id="ans0">
+</div>
+
+<div>
+<label>الإجابة B</label>
+<input id="ans1">
+</div>
+
+<div>
+<label>الإجابة C</label>
+<input id="ans2">
+</div>
+
+<div>
+<label>الإجابة D</label>
+<input id="ans3">
+</div>
+
+<div>
+<label>الإجابة الصحيحة</label>
+<select id="correctAnswer">
+<option value="0">A</option>
+<option value="1">B</option>
+<option value="2">C</option>
+<option value="3">D</option>
+</select>
+</div>
+
+<div>
+<label>مستوى الصعوبة</label>
+<select id="difficulty">
+<option value="easy">🟢 سهل</option>
+<option value="medium">🟡 متوسط</option>
+<option value="hard">🔴 صعب</option>
+<option value="expert">🟣 خبير</option>
+</select>
+</div>
+
+</div>
+
+<div class="controls">
+
+<button class="main-btn" onclick="addQuestion()">
+💾 حفظ السؤال
+</button>
+
+<button class="main-btn secondary" onclick="backHome()">
+⬅ العودة
+</button>
+
+</div>
+
+<div class="question-count" id="questionCount"></div>
+
+</section>
+
+</main>
+</div>
+
 
 <script>
 
-/* =====================================================
-   💰 القيم المالية
-   ===================================================== */
+/* ==========================================================
+   إعدادات اللعبة
+   ========================================================== */
 
-const moneyValues = [
-  5,10,15,20,25,
-  30,35,40,45,50,
-  55,60,65,70,75,
-  80,85,90,95,100,
-  110,120,130,140,150,
-  160,170,180,190,200
+const moneyValues=[
+5,10,15,20,25,30,35,40,45,50,
+55,60,65,70,75,80,85,90,95,100,
+110,120,130,140,150,160,170,180,190,200
 ];
 
 
-/* =====================================================
-   📝 الأسئلة
-   =====================================================
+/* ==========================================================
+   أسئلة تجريبية
+   ========================================================== */
 
-   👇 هنا المكان الذي تضيفين فيه أسئلتك.
+const defaultQuestions=[
 
-   كل سؤال بالشكل التالي:
+{
+question:"ما هو الكوكب المعروف بالكوكب الأحمر؟",
+answers:["الأرض","المريخ","المشتري","الزهرة"],
+correct:1,
+difficulty:"easy"
+},
 
-   {
-     question: "السؤال هنا",
-     answers: [
-       "الإجابة الأولى",
-       "الإجابة الثانية",
-       "الإجابة الثالثة",
-       "الإجابة الرابعة"
-     ],
-     correct: 0
-   }
+{
+question:"ما الوحدة الأساسية لبناء جسم الكائن الحي؟",
+answers:["النسيج","العضو","الخلية","الجهاز"],
+correct:2,
+difficulty:"easy"
+},
 
-   correct:
-   0 = الإجابة الأولى
-   1 = الإجابة الثانية
-   2 = الإجابة الثالثة
-   3 = الإجابة الرابعة
+{
+question:"أي غاز تحتاجه النباتات في عملية البناء الضوئي؟",
+answers:["الأكسجين","النيتروجين","ثاني أكسيد الكربون","الهيدروجين"],
+correct:2,
+difficulty:"medium"
+},
 
-   يمكنك إضافة عدد غير محدود من الأسئلة.
-   ===================================================== */
+{
+question:"أي مما يلي يعد فلزًا؟",
+answers:["الأكسجين","الحديد","الكربون","الكلور"],
+correct:1,
+difficulty:"medium"
+},
 
+{
+question:"ما العضو المسؤول عن ضخ الدم في جسم الإنسان؟",
+answers:["الرئة","القلب","المعدة","الكبد"],
+correct:1,
+difficulty:"easy"
+},
 
-const questions = [
+{
+question:"ما أكبر كوكب في المجموعة الشمسية؟",
+answers:["الأرض","المريخ","زحل","المشتري"],
+correct:3,
+difficulty:"easy"
+},
 
-  {
-    question: "ما هو الكوكب المعروف بالكوكب الأحمر؟",
-    answers: [
-      "الأرض",
-      "المريخ",
-      "المشتري",
-      "الزهرة"
-    ],
-    correct: 1
-  },
+{
+question:"ما العملية التي تصنع بها النباتات غذاءها؟",
+answers:["التنفس","الهضم","البناء الضوئي","الإخراج"],
+correct:2,
+difficulty:"medium"
+},
 
-  {
-    question: "ما الغاز الذي تحتاجه النباتات لعملية البناء الضوئي؟",
-    answers: [
-      "الأكسجين",
-      "النيتروجين",
-      "ثاني أكسيد الكربون",
-      "الهيدروجين"
-    ],
-    correct: 2
-  },
+{
+question:"ما عاصمة مصر؟",
+answers:["الإسكندرية","القاهرة","الجيزة","المنصورة"],
+correct:1,
+difficulty:"easy"
+},
 
-  {
-    question: "كم عدد أيام الأسبوع؟",
-    answers: [
-      "5",
-      "6",
-      "7",
-      "8"
-    ],
-    correct: 2
-  },
+{
+question:"أي مما يلي يمثل رابطة تتكون نتيجة مشاركة الذرات بالإلكترونات؟",
+answers:["أيونية","تساهمية","فلزية","نووية"],
+correct:1,
+difficulty:"hard"
+},
 
-  {
-    question: "ما عاصمة مصر؟",
-    answers: [
-      "الإسكندرية",
-      "القاهرة",
-      "الجيزة",
-      "المنصورة"
-    ],
-    correct: 1
-  },
+{
+question:"إذا زادت قوة محصلة تؤثر في جسم مع ثبات كتلته، ماذا يحدث لعجلته؟",
+answers:["تقل","تزداد","تظل ثابتة دائمًا","تنعدم"],
+correct:1,
+difficulty:"hard"
+},
 
-  {
-    question: "أي مما يلي يعد مصدرًا للطاقة؟",
-    answers: [
-      "الشمس",
-      "الكتاب",
-      "الماء فقط",
-      "الهواء فقط"
-    ],
-    correct: 0
-  },
+{
+question:"أي مستوى من مستويات التنظيم الحيوي يأتي بعد النسيج؟",
+answers:["الخلية","العضو","الجهاز","الكائن الحي"],
+correct:1,
+difficulty:"medium"
+},
 
-  {
-    question: "ما الوحدة الأساسية لبناء جسم الكائن الحي؟",
-    answers: [
-      "النسيج",
-      "العضو",
-      "الخلية",
-      "الجهاز"
-    ],
-    correct: 2
-  },
-
-  {
-    question: "أي من الآتي يعد فلزًا؟",
-    answers: [
-      "الأكسجين",
-      "الحديد",
-      "الكربون",
-      "الكلور"
-    ],
-    correct: 1
-  },
-
-  {
-    question: "ما العملية التي تصنع بها النباتات غذاءها؟",
-    answers: [
-      "التنفس",
-      "الهضم",
-      "البناء الضوئي",
-      "الإخراج"
-    ],
-    correct: 2
-  },
-
-  {
-    question: "ما أكبر كوكب في المجموعة الشمسية؟",
-    answers: [
-      "الأرض",
-      "المريخ",
-      "زحل",
-      "المشتري"
-    ],
-    correct: 3
-  },
-
-  {
-    question: "ما العضو المسؤول عن ضخ الدم في جسم الإنسان؟",
-    answers: [
-      "الرئة",
-      "القلب",
-      "المعدة",
-      "الكبد"
-    ],
-    correct: 1
-  }
+{
+question:"ما العامل الذي لا يؤثر مباشرة في معدل البناء الضوئي؟",
+answers:["شدة الضوء","تركيز ثاني أكسيد الكربون","درجة الحرارة","لون الحذاء"],
+correct:3,
+difficulty:"easy"
+}
 
 ];
 
 
-/* =====================================================
-   متغيرات اللعبة
-   ===================================================== */
-
-let currentQuestion = 0;
-let currentMoney = 0;
-let usedFifty = false;
-let usedAudience = false;
+let questions=
+JSON.parse(localStorage.getItem("millionQuestions")) ||
+defaultQuestions;
 
 
-/* =====================================================
-   إنشاء لوحة النقود
-   ===================================================== */
+/* ==========================================================
+   حالة اللعبة
+   ========================================================== */
 
-function createMoneyBoard() {
+let currentIndex=0;
+let currentMoney=0;
+let currentQuestions=[];
+let usedQuestions=[];
+let fiftyUsed=false;
+let audienceUsed=false;
 
-  const board = document.getElementById("moneyBoard");
 
-  board.innerHTML = "";
+/* ==========================================================
+   الأصوات باستخدام Web Audio
+   لا تحتاجي ملفات صوت خارجية
+   ========================================================== */
 
-  moneyValues.forEach((value, index) => {
+let audioContext=null;
 
-    const div = document.createElement("div");
+function sound(type){
 
-    div.className = "money";
+try{
 
-    div.id = "money-" + index;
+if(!audioContext)
+audioContext=new(window.AudioContext||window.webkitAudioContext)();
 
-    div.textContent = value + " جنيه";
+const osc=audioContext.createOscillator();
+const gain=audioContext.createGain();
 
-    board.appendChild(div);
+osc.connect(gain);
+gain.connect(audioContext.destination);
 
-  });
+let freq=440;
+let duration=.12;
+
+if(type==="correct"){
+freq=700;
+duration=.22;
+}
+
+if(type==="wrong"){
+freq=150;
+duration=.35;
+}
+
+if(type==="click"){
+freq=400;
+duration=.08;
+}
+
+if(type==="win"){
+freq=900;
+duration=.6;
+}
+
+osc.frequency.value=freq;
+osc.type="sine";
+
+gain.gain.setValueAtTime(.001,audioContext.currentTime);
+gain.gain.exponentialRampToValueAtTime(.15,audioContext.currentTime+.02);
+gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);
+
+osc.start();
+osc.stop(audioContext.currentTime+duration);
+
+}catch(e){}
 
 }
 
 
-/* =====================================================
+/* ==========================================================
+   لوحة الجوائز
+   ========================================================== */
+
+function createPrizes(){
+
+const box=document.getElementById("prizes");
+
+box.innerHTML="";
+
+[...moneyValues].reverse().forEach((money,index)=>{
+
+const originalIndex=moneyValues.length-1-index;
+
+const div=document.createElement("div");
+
+div.className="prize";
+div.id="prize-"+originalIndex;
+
+div.textContent=money+" جنيه";
+
+box.appendChild(div);
+
+});
+
+}
+
+function updatePrizes(){
+
+moneyValues.forEach((money,index)=>{
+
+const el=document.getElementById("prize-"+index);
+
+if(!el)return;
+
+el.classList.remove("current","passed");
+
+if(index===currentIndex)
+el.classList.add("current");
+
+if(index<currentIndex)
+el.classList.add("passed");
+
+});
+
+}
+
+
+/* ==========================================================
+   اختيار الأسئلة حسب الصعوبة
+   ========================================================== */
+
+function getDifficulty(index){
+
+if(index<=2)return["easy"];
+
+if(index<=6)return["easy","medium"];
+
+if(index<=12)return["medium","hard"];
+
+if(index<=19)return["hard"];
+
+return["hard","expert"];
+
+}
+
+
+/* ==========================================================
+   تجهيز بنك الأسئلة للعبة
+   ========================================================== */
+
+function prepareQuestions(){
+
+let available=[...questions];
+
+currentQuestions=[];
+
+for(let i=0;i<moneyValues.length;i++){
+
+const levels=getDifficulty(i);
+
+let candidates=available.filter(q=>
+levels.includes(q.difficulty)
+);
+
+if(candidates.length===0)
+candidates=available;
+
+if(candidates.length===0)break;
+
+const randomIndex=
+Math.floor(Math.random()*candidates.length);
+
+const chosen=candidates[randomIndex];
+
+currentQuestions.push(chosen);
+
+available=available.filter(q=>q!==chosen);
+
+}
+
+}
+
+
+/* ==========================================================
    بدء اللعبة
-   ===================================================== */
+   ========================================================== */
 
-function startGame() {
+function startGame(){
 
-  currentQuestion = 0;
-  currentMoney = 0;
+let name=
+document.getElementById("studentName").value.trim();
 
-  usedFifty = false;
-  usedAudience = false;
+if(!name){
 
-  document.getElementById("startScreen").style.display = "none";
+alert("اكتب اسم الطالب أولًا ❤️");
 
-  document.getElementById("resultScreen").style.display = "none";
+return;
 
-  document.getElementById("questionScreen").style.display = "block";
+}
 
-  loadQuestion();
+if(questions.length===0){
+
+alert("لا يوجد أسئلة في بنك الأسئلة.");
+
+return;
+
+}
+
+currentIndex=0;
+currentMoney=0;
+fiftyUsed=false;
+audienceUsed=false;
+
+prepareQuestions();
+
+document.getElementById("startScreen").style.display="none";
+document.getElementById("adminScreen").style.display="none";
+document.getElementById("resultScreen").style.display="none";
+document.getElementById("gameScreen").style.display="block";
+
+sound("click");
+
+loadQuestion();
 
 }
 
 
-/* =====================================================
+/* ==========================================================
    عرض السؤال
-   ===================================================== */
+   ========================================================== */
 
-function loadQuestion() {
+function loadQuestion(){
 
-  if (currentQuestion >= questions.length) {
+if(currentIndex>=currentQuestions.length){
 
-    finishGame();
+finishGame();
 
-    return;
+return;
 
-  }
+}
 
-  const q = questions[currentQuestion];
+const q=currentQuestions[currentIndex];
 
-  document.getElementById("questionNumber").textContent =
-    "السؤال رقم " + (currentQuestion + 1) +
-    " — قيمة السؤال: " +
-    moneyValues[currentQuestion] +
-    " جنيه";
+document.getElementById("questionNumber").textContent=
+"السؤال "+(currentIndex+1)+
+" — "+moneyValues[currentIndex]+" جنيه";
 
-  document.getElementById("question").textContent = q.question;
+const difficultyNames={
+easy:"🟢 سهل",
+medium:"🟡 متوسط",
+hard:"🔴 صعب",
+expert:"🟣 خبير"
+};
 
-  const answersDiv = document.getElementById("answers");
+document.getElementById("difficultyText").textContent=
+difficultyNames[q.difficulty];
 
-  answersDiv.innerHTML = "";
+document.getElementById("questionText").textContent=
+q.question;
 
-  q.answers.forEach((answer, index) => {
+const box=document.getElementById("answers");
 
-    const button = document.createElement("button");
+box.innerHTML="";
 
-    button.className = "answer";
+q.answers.forEach((answer,index)=>{
 
-    button.textContent =
-      String.fromCharCode(65 + index) + ") " + answer;
+const button=document.createElement("button");
 
-    button.onclick = function() {
+button.className="answer";
 
-      checkAnswer(index, button);
+button.textContent=
+String.fromCharCode(65+index)+") "+answer;
 
-    };
+button.onclick=()=>checkAnswer(index,button);
 
-    answersDiv.appendChild(button);
+box.appendChild(button);
 
-  });
+});
 
-  updateMoneyBoard();
+updatePrizes();
 
 }
 
 
-/* =====================================================
-   فحص الإجابة
-   ===================================================== */
+/* ==========================================================
+   الإجابة
+   ========================================================== */
 
-function checkAnswer(selected, button) {
+function checkAnswer(selected,button){
 
-  const q = questions[currentQuestion];
+const q=currentQuestions[currentIndex];
 
-  const buttons =
-    document.querySelectorAll(".answer");
+const buttons=
+document.querySelectorAll(".answer");
 
-  buttons.forEach(btn => {
+buttons.forEach(b=>b.classList.add("locked"));
 
-    btn.classList.add("disabled");
+if(selected===q.correct){
 
-  });
+button.classList.add("correct");
 
-  if (selected === q.correct) {
+sound("correct");
 
-    button.classList.add("correct");
+currentMoney=moneyValues[currentIndex];
 
-    currentMoney = moneyValues[currentQuestion];
+setTimeout(()=>{
 
-    setTimeout(() => {
+currentIndex++;
 
-      currentQuestion++;
+loadQuestion();
 
-      loadQuestion();
+},800);
 
-    }, 900);
+}else{
 
-  } else {
+button.classList.add("wrong");
 
-    button.classList.add("wrong");
+buttons[q.correct].classList.add("correct");
 
-    buttons[q.correct].classList.add("correct");
+sound("wrong");
 
-    setTimeout(() => {
+setTimeout(()=>{
 
-      finishGame();
+finishGame();
 
-    }, 1200);
+},1100);
 
-  }
+}
 
 }
 
 
-/* =====================================================
-   تحديث لوحة النقود
-   ===================================================== */
-
-function updateMoneyBoard() {
-
-  moneyValues.forEach((value, index) => {
-
-    const box = document.getElementById("money-" + index);
-
-    box.classList.remove("active");
-
-    if (index < currentQuestion) {
-
-      box.classList.add("used");
-
-    }
-
-  });
-
-  const currentBox =
-    document.getElementById("money-" + currentQuestion);
-
-  if (currentBox) {
-
-    currentBox.classList.add("active");
-
-  }
-
-}
-
-
-/* =====================================================
+/* ==========================================================
    50/50
-   ===================================================== */
+   ========================================================== */
 
-function fiftyFifty() {
+function use5050(){
 
-  if (usedFifty) {
+if(fiftyUsed){
 
-    alert("لقد استخدمت وسيلة 50/50 بالفعل!");
+alert("استخدمت 50/50 بالفعل.");
 
-    return;
+return;
 
-  }
+}
 
-  usedFifty = true;
+fiftyUsed=true;
 
-  const q = questions[currentQuestion];
+const q=currentQuestions[currentIndex];
 
-  const buttons =
-    document.querySelectorAll(".answer");
+const buttons=
+document.querySelectorAll(".answer");
 
-  let wrongAnswers = [];
+let wrong=[];
 
-  q.answers.forEach((answer, index) => {
+q.answers.forEach((a,i)=>{
 
-    if (index !== q.correct) {
+if(i!==q.correct)wrong.push(i);
 
-      wrongAnswers.push(index);
+});
 
-    }
+wrong.sort(()=>Math.random()-.5);
 
-  });
+wrong.slice(0,2).forEach(i=>{
 
-  wrongAnswers.sort(() => Math.random() - 0.5);
+buttons[i].classList.add("hidden");
 
-  wrongAnswers.slice(0, 2).forEach(index => {
+});
 
-    buttons[index].style.visibility = "hidden";
-
-  });
+sound("click");
 
 }
 
 
-/* =====================================================
-   اسأل الجمهور
-   ===================================================== */
+/* ==========================================================
+   الجمهور
+   ========================================================== */
 
-function askAudience() {
+function askAudience(){
 
-  if (usedAudience) {
+if(audienceUsed){
 
-    alert("لقد استخدمت وسيلة اسأل الجمهور بالفعل!");
+alert("استخدمت وسيلة الجمهور بالفعل.");
 
-    return;
+return;
 
-  }
+}
 
-  usedAudience = true;
+audienceUsed=true;
 
-  const q = questions[currentQuestion];
+const q=currentQuestions[currentIndex];
 
-  let percentages = [5,5,5,5];
+let percentages=[0,0,0,0];
 
-  percentages[q.correct] = 85;
+percentages[q.correct]=
+70+Math.floor(Math.random()*21);
 
-  let remaining = 15;
+let remaining=
+100-percentages[q.correct];
 
-  let wrongIndexes = [];
+let wrongIndices=[];
 
-  q.answers.forEach((answer,index) => {
+q.answers.forEach((a,i)=>{
 
-    if(index !== q.correct) {
+if(i!==q.correct)
+wrongIndices.push(i);
 
-      wrongIndexes.push(index);
+});
 
-    }
+wrongIndices.forEach((i,index)=>{
 
-  });
+if(index===wrongIndices.length-1){
 
-  wrongIndexes.forEach((index,i) => {
+percentages[i]=remaining;
 
-    if(i === wrongIndexes.length - 1) {
+}else{
 
-      percentages[index] = remaining;
+const value=
+Math.floor(Math.random()*(remaining+1));
 
-    } else {
+percentages[i]=value;
 
-      let number =
-        Math.floor(Math.random() * (remaining + 1));
+remaining-=value;
 
-      percentages[index] = number;
+}
 
-      remaining -= number;
+});
 
-    }
+let message="📊 نتيجة تصويت الجمهور:\n\n";
 
-  });
+q.answers.forEach((a,i)=>{
 
-  let message = "📊 توقعات الجمهور:\n\n";
+message+=
+String.fromCharCode(65+i)+
+") "+a+
+" — "+percentages[i]+"%\n";
 
-  q.answers.forEach((answer,index) => {
+});
 
-    message +=
-      String.fromCharCode(65 + index) +
-      ") " +
-      answer +
-      " = " +
-      percentages[index] +
-      "%\n";
+alert(message);
 
-  });
-
-  alert(message);
+sound("click");
 
 }
 
 
-/* =====================================================
-   تخطي السؤال
-   ===================================================== */
-
-function skipQuestion() {
-
-  const confirmation =
-    confirm("هل تريد تخطي هذا السؤال؟");
-
-  if (!confirmation) return;
-
-  currentQuestion++;
-
-  loadQuestion();
-
-}
-
-
-/* =====================================================
+/* ==========================================================
    نهاية اللعبة
-   ===================================================== */
+   ========================================================== */
 
-function finishGame() {
+function finishGame(){
 
-  document.getElementById("questionScreen").style.display = "none";
+document.getElementById("gameScreen").style.display="none";
+document.getElementById("resultScreen").style.display="block";
 
-  document.getElementById("resultScreen").style.display = "block";
+const name=
+document.getElementById("studentName").value.trim();
 
-  document.getElementById("finalScore").textContent =
-    currentMoney + " جنيه";
+document.getElementById("finalName").textContent=name;
 
-  if (currentMoney >= 200) {
+document.getElementById("finalQuestions").textContent=
+currentMoney===0?0:currentIndex;
 
-    document.getElementById("resultMessage").textContent =
-      "🏆 مذهل! لقد وصلت إلى أعلى قيمة!";
+document.getElementById("finalMoney").textContent=
+currentMoney+" جنيه";
 
-  } else if (currentMoney >= 100) {
-
-    document.getElementById("resultMessage").textContent =
-      "👏 أداء رائع جدًا!";
-
-  } else if (currentMoney > 0) {
-
-    document.getElementById("resultMessage").textContent =
-      "👍 أحسنت! حاول الوصول إلى قيمة أعلى في المرة القادمة.";
-
-  } else {
-
-    document.getElementById("resultMessage").textContent =
-      "💪 لا بأس، حاول مرة أخرى!";
-
-  }
+sound("win");
 
 }
 
 
-/* =====================================================
-   إعادة اللعبة
-   ===================================================== */
+/* ==========================================================
+   لعبة جديدة
+   ========================================================== */
 
-function restartGame() {
+function newGame(){
 
-  document.getElementById("resultScreen").style.display = "none";
+document.getElementById("resultScreen").style.display="none";
+document.getElementById("startScreen").style.display="block";
 
-  document.getElementById("startScreen").style.display = "block";
+document.getElementById("studentName").value="";
 
-  moneyValues.forEach((value,index) => {
-
-    const box =
-      document.getElementById("money-" + index);
-
-    box.classList.remove("used");
-    box.classList.remove("active");
-
-  });
+createPrizes();
 
 }
 
 
-/* =====================================================
-   تشغيل أولي
-   ===================================================== */
+/* ==========================================================
+   إدارة الأسئلة
+   ========================================================== */
 
-createMoneyBoard();
+function showAdmin(){
 
-</script>
+document.getElementById("startScreen").style.display="none";
+document.getElementById("gameScreen").style.display="none";
+document.getElementById("resultScreen").style.display="none";
+document.getElementById("adminScreen").style.display="block";
 
-</body>
-  </html>
+updateQuestionCount();
+
+}
+
+function backHome(){
+
+document.getElementById("adminScreen").style.display="none";
+document.getElementById("startScreen").style.display="block";
+
+}
+
+function addQuestion(){
+
+const question=
+document.getElementById("newQuestion").value.trim();
+
+const answers=[
+document.getElementById("ans0").value.trim(),
+document.getElementById("ans1").value.trim(),
+document.getElementById("ans2").value.trim(),
+document.getElementById("ans3").value.trim()
+];
+
+const correct=
+Number(document.getElementById("correctAnswer").value);
+
+const difficulty=
+document.getElementById("difficulty").value;
+
+if(!question || answers.some(a=>!a)){
+
+alert("اكتبي السؤال وكل الإجابات الأربعة.");
+
+return;
+
+}
+
+questions.push({
+question,
+answers,
+correct,
+difficulty
+});
+
+localStorage.setItem(
+"millionQuestions",
+JSON.stringify(questions)
+);
+
+document.getElementById("newQuestion").value="";
+
+document.getElementById("ans0").value="";
+document.getElementById("ans1").value="";
+document.getElementById("ans2").value="";
+document.getElementById("ans3").value="";
+
+updateQuestionCount();
+
+sound("correct");
+
+alert("✅ تم حفظ السؤال بنجاح!");
+
+}
+
+function updateQuestionCount(){
+
+document.getElementById("questionCount").textContent=
+"📚 عدد الأسئلة في البنك: "+questions.length;
+
+}
+
+
+/* ================================================
